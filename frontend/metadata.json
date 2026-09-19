@@ -1,0 +1,7 @@
+{
+  "name": "Digital Landfill",
+  "description": "AI-powered digital waste intelligence and knowledge recovery platform by TCET CoE.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
