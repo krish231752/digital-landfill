@@ -486,15 +486,15 @@ def startup_event() -> None:
 
 
 @app.get("/api/health")
-def get_health() -> dict[str, Any]:
-    """Health check endpoint providing backend status, deployment mode, and TCET CoE Gateway health."""
-    qwen_cfg = QwenConfig.from_env()
-    is_qwen_ok, qwen_badge, qwen_msg = check_qwen_health(qwen_cfg)
+def health():
+    """Fast backend health check. Does not call external Qwen services."""
 
     with state.lock:
         scanned = state.scanned_root is not None
         root = state.scanned_root
         total_f = len(state.records)
+
+    has_ai_key = bool(getattr(qwen_cfg, "api_key", None))
 
     return {
         "status": "healthy",
@@ -506,14 +506,13 @@ def get_health() -> dict[str, Any]:
         "total_files": total_f,
         "demo_dir": DEMO_DIR if IS_DEMO_MODE else None,
         "qwen_gateway": {
-            "status": "Connected" if is_qwen_ok else "Not Configured" if not qwen_cfg.api_key else "Offline",
-            "badge": qwen_badge,
-            "detail": qwen_msg,
-            "model": qwen_cfg.model,
-            "base_url": qwen_cfg.base_url,
+            "status": "Configured" if has_ai_key else "Not Configured",
+            "badge": "TCET CoE Qwen",
+            "detail": "AI gateway configured" if has_ai_key else "AI gateway key not configured",
+            "model": getattr(qwen_cfg, "model", None),
+            "base_url": getattr(qwen_cfg, "base_url", None),
         },
     }
-
 
 @app.post("/api/scan")
 def scan_directory(req: ScanRequest) -> dict[str, Any]:
