@@ -487,31 +487,9 @@ def startup_event() -> None:
 
 @app.get("/api/health")
 def health():
-    """Fast backend health check. Does not call external Qwen services."""
-
-    with state.lock:
-        scanned = state.scanned_root is not None
-        root = state.scanned_root
-        total_f = len(state.records)
-
-    has_ai_key = bool(getattr(qwen_cfg, "api_key", None))
-
     return {
         "status": "healthy",
-        "service": "Digital Landfill FastAPI Backend",
-        "deployment_mode": "demo" if IS_DEMO_MODE else "local",
-        "is_demo_mode": IS_DEMO_MODE,
-        "has_active_scan": scanned,
-        "scanned_root": root,
-        "total_files": total_f,
-        "demo_dir": DEMO_DIR if IS_DEMO_MODE else None,
-        "qwen_gateway": {
-            "status": "Configured" if has_ai_key else "Not Configured",
-            "badge": "TCET CoE Qwen",
-            "detail": "AI gateway configured" if has_ai_key else "AI gateway key not configured",
-            "model": getattr(qwen_cfg, "model", None),
-            "base_url": getattr(qwen_cfg, "base_url", None),
-        },
+        "service": "Digital Landfill FastAPI Backend"
     }
 
 @app.post("/api/scan")
